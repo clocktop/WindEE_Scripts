@@ -1,7 +1,7 @@
 import os
 
 
-with open('./raw_data/b.txt') as infile, open('./processed_data/b_processed.txt','w') as outfile:
+with open('./raw_data/2chan.txt') as infile, open('./processed_data/2chan_processed.txt','w') as outfile:
     data = infile.read()
     data = data.replace("[","")
     data = data.replace("]","")
