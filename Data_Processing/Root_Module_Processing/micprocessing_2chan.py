@@ -6,10 +6,10 @@ import numpy as np
 import scipy
 from scipy.fft import rfft, rfftfreq
 import time 
-plt.style.use('seaborn-paper')
+plt.style.use('./plot_style.mplstyle')
 # %%
 
-data = np.loadtxt('./processed_data/2chan_processed.txt',delimiter=',',dtype=np.int32)
+data = np.loadtxt('./processed_data/b1_processed.txt',delimiter=',',dtype=np.int32)
 # %%
 tic = time.perf_counter()
 d0 = np.array(np.zeros(int(len(data)/4),dtype=np.int32))
@@ -38,14 +38,14 @@ print(f'Took {toc-tic:0.4f} seconds')
 # %%
 # plot time series
 sample_rate = 100000
-n = len(d0)
+n = len(d1)
 x = np.linspace(0, n/sample_rate, n)
 
 fig1, ax1 = plt.subplots(figsize = [10,5])
-ax1.plot(x,d0)
+ax1.plot(x,d1)
 
 ax1_ins = ax1.inset_axes([0.5, 0.5, 0.47, 0.47])
-ax1_ins.plot(x[4000:6000], d0[4000:6000])
+ax1_ins.plot(x[4000:6000], d1[4000:6000])
 ax1_ins.set_xticklabels('') 
 ax1_ins.set_yticklabels('') 
 
@@ -59,7 +59,7 @@ plt.show()
 sample_rate = 100000
 n = 8192
 win = np.hamming(n)
-samp_sig = d0[0:8192]-np.round(np.mean(d0[0:8192])) * win
+samp_sig = d1[3000:11192]-np.round(np.mean(d1[3000:11192])) * win
 yf = rfft(samp_sig)
 xf = rfftfreq(n,1/sample_rate)
 ref = 4096
@@ -75,22 +75,23 @@ ax2.set_xlabel('Frequency [Hz]')
 ax2.set_ylabel('Amplitude [dBfs]')
 ax2.set_title('FFT of Sample Signal')
 
-peakf = xf[np.argmax(yf)]
-peakamp = yf_dbfs[np.argmax(yf)]
+peakf = xf[np.argmax(yf_dbfs)]
+peakamp = yf_dbfs[np.argmax(yf_dbfs)]
 xdisp, ydisp = ax2.transData.transform_point((peakf, peakamp))
-bbox = dict(boxstyle ='round',fc='0.8')
+bbox = dict(boxstyle ='round',fc='0.4')
 arrowprops = dict(
     arrowstyle = '->',
-    connectionstyle = 'angle,angleA=0,angleB=90,rad=10'
+    connectionstyle = 'arc3,rad=-0.75'
 )
 offset = 72
 
 ax2.annotate(
     'Peakf = %.1f Hz \n Peaka = %.1f dBfs'%(peakf,peakamp),
     (peakf,peakamp),
-    xytext=(offset,-offset/2),
+    xytext=(offset,-offset),
     textcoords='offset points',
     bbox = bbox,
-    arrowprops = arrowprops
+    arrowprops = arrowprops,
+    color = [1,1,1]
 )
 # %%
